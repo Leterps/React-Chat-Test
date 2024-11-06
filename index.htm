@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello World</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      const { useState } = React;
+
+      function Message ({name, date, text, read}){
+        const [showFull, setShowFull] = useState(false);
+        function openFull () {
+          setShowFull(true);
+        }
+        function openShort() {
+          setShowFull(false);
+        }
+        return (
+          <div>
+          <p> {name} </p>
+          <p> {date} </p>
+          {read ?
+            <p> V </p>
+            :
+            <p> X </p>
+          }
+          {text.length>100 ?
+            showFull ?
+              <p> {text}
+              <button onClick = {openShort}> less </button>
+              </p>
+              :
+              <p> {text.substring(0,99)} ...
+              <button onClick = {openFull}> more </button>
+              </p>
+            :
+            <p> {text}
+            </p>
+
+          }
+          </div>
+        )
+      }
+      function MessageForm ({sendText}) {
+        function submitAction (event) {
+          event.preventDefault();
+          let receivedText = event.target[0].value;
+          sendText (receivedText)
+        }
+        return (
+          <form onSubmit={submitAction}>
+          <div className="mb-3">
+            <label for="exampleFormControlTextarea1" className="form-label">Example textarea</label>
+            <textarea className="form-control" id="exampleFormControlTextarea1" rows="3"></textarea>
+            <button type="submit" className="btn btn-primary mb-3">Confirm identity</button>
+          </div>
+          </form>
+
+        )
+      }
+      function MyApp() {
+        let defaultMessages = [
+          {id: 1, name:'Murchik', date:"12:30", text:"good morning :3", read:true},
+          {id: 2, name:'Kotek', date:"12:31", text:"hiiii~", read:true},
+          {id: 3, name:'Murchik', date:"12:31", text:"miss you t-t", read:true},
+          {id: 4, name: 'Kotek', date: "12:34", text: 'me too :3', read:true},
+          {id: 5, name: 'Murchik', date: "12:38", text: "Lorem ipsum dolor sit amet. At dignissimos perspiciatis vel voluptas labore ut fugiat enim vel nemo laboriosam non molestiae odit! Ut corrupti laudantium aut natus ratione sit laboriosam dolorem nam assumenda quidem qui eligendi maxime.", read:true},
+          {id: 6, name: 'Kotek', date: "12:55", text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.', read:true}
+        ];
+        let [messages, setMessages] = useState (defaultMessages);
+        function addMessage(text) {
+          const lastMessage = messages[messages.length - 1];
+          let newMessage = {id:lastMessage.id+1, name:'Murchik', date:'', text:text, read:false}
+          let newMessages = [...messages, newMessage];
+          setMessages (newMessages);
+        }
+        return (
+          <div>
+            <MessageForm sendText = {addMessage}/>
+            <div>
+              {[...messages].reverse().map (message =>
+                (<Message key= {message.id} name={message.name} date={message.date} text={message.text} read = {message.read}/>)
+              )}
+            </div>
+          </div>);
+      }
+
+      const container = document.getElementById('root');
+      const root = ReactDOM.createRoot(container);
+      root.render(<MyApp />);
+
+    </script>
+  </body>
+</html>
